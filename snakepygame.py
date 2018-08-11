@@ -21,7 +21,7 @@ block_size=20.0
 
 direction="right"
 clock=pygame.time.Clock()
-FPS=15
+FPS=10
 
 font=pygame.font.SysFont(None,25)
 
@@ -59,11 +59,16 @@ def score_display(txt,color):
     score_text=font.render(txt,True,color)
     gameDisplay.blit(score_text,[300,500])
 
-
+##def Level2():
+##    pygame.draw.line(gameDisplay,blue,[0,0],[0,display_height],20)
+##    pygame.draw.line(gameDisplay,blue,[0,0],[display_width,0],20)
+##    pygame.draw.line(gameDisplay,blue,[display_width,0],[display_width,display_height],20)
+##    pygame.draw.line(gameDisplay,blue,[0,display_height],[display_width,display_height],20)
+##    pygame.display.update()
+    
 def gameLoop():
     global direction
     global score
-    #flag=random.randrange(0,1)
     flag=1
     gameExit = False
     gameOver = False
@@ -73,31 +78,34 @@ def gameLoop():
 
     lead_x_change=0
     lead_y_change=0
-
-    snake_List=[]
+    snake_List=[ ]  
     snakeLength=1
-    randAppleX=round(random.randrange(0,display_width-block_size)/block_size)*block_size
-    randAppleY=round(random.randrange(0,display_height-block_size)/block_size)*block_size
-    randX=random.randrange(0,display_width-10)
-    randY=random.randrange(0,display_height-10)
+    randAppleX=int(round(random.randrange(0,display_width-block_size)/block_size)*block_size)
+    randAppleY=int(round(random.randrange(0,display_height-block_size)/block_size)*block_size)
+##    randX=random.randrange(0,display_width-10)
+##    randY=random.randrange(0,display_height-10)
     
     while not gameExit:
-        while gameOver == True:
-            gameDisplay.fill(white)
-            message_to_screen("Game Over,Press C to play again,Q to Quit",red)
-            score_display("Final Score:"+str(score),blue)   
-            pygame.display. update()
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
-                        gameExit = True
-                        gameOver = False  
-                    elif event.key == pygame.K_c:
-                        score=0
-                        gameLoop()           
+##        if(score>100):
+##            Level2()
+##            break
+##            
+##        while gameOver == True:
+##            gameDisplay.fill(white)
+##            message_to_screen("Game Over,Press C to play again,Q to Quit",red)
+##            score_display("Final Score:"+str(score),blue)   
+##            pygame.display. update()
+##
+##            for event in pygame.event.get():
+##                if event.type == pygame.QUIT:
+##                    pygame.quit()
+##                if event.type == pygame.KEYDOWN:
+##                    if event.key == pygame.K_q:
+##                        gameExit = True
+##                        gameOver = False  
+##                    elif event.key == pygame.K_c:
+##                        score=0
+##                        gameLoop()           
 
             
         for event in pygame.event.get():
@@ -122,54 +130,80 @@ def gameLoop():
                 elif event.key == pygame.K_DOWN:
                     if(direction != "up"):
                         direction = "down"
-                        lead_y_change = block_size
+                        lead_y_change = block_size 
                         lead_x_change=0
 
+                    
+        lead_x += lead_x_change
+        lead_y += lead_y_change
+
         if lead_x >= display_width :
-            lead_x = 0
+            lead_x =0 
         if lead_x < 0:
             lead_x = display_width
         if lead_y >= display_height :
             lead_y = 0
         if lead_y < 0:
             lead_y=display_height
-            
-        lead_x += lead_x_change
-        lead_y += lead_y_change
+
         gameDisplay.fill(black)
 
-        pygame.draw.rect(gameDisplay,red,[randAppleX,randAppleY,block_size,block_size])
-        if lead_x == randAppleX and lead_y == randAppleY:
-            print("om om om")
-            randAppleX=round(random.randrange(0,display_width-block_size)/block_size)*block_size
-            randAppleY=round(random.randrange(0,display_height-block_size)/block_size)*block_size
-            snakeLength+=1
-            score+=10
- 
+##        pygame.draw.rect(gameDisplay,red,[100,100,20,20])
+##        pygame.draw.rect(gameDisplay,red,[121,100,20,20])
+        if(flag==1):
+            pygame.draw.rect(gameDisplay,red,[randAppleX,randAppleY,block_size,block_size])
+            if lead_x == randAppleX and lead_y == randAppleY:
+                print("om om om")
+                randAppleX=int(round(random.randrange(0,display_width-block_size)/block_size)*block_size)
+                randAppleY=int(round(random.randrange(0,display_height-block_size)/block_size)*block_size)
+                snakeLength+=1
+                score+=10                                               
+                flag=random.randrange(1,3)
+                
+        else:
+            pygame.draw.circle(gameDisplay,red,[randAppleX+int(block_size/2),randAppleY+int(block_size/2)],int(block_size/2))
+            if lead_x == randAppleX and lead_y == randAppleY:
+                print("om om om")
+                randAppleX=int(round(random.randrange(0,display_width-block_size)/block_size)*block_size)
+                randAppleY=int(round(random.randrange(0,display_height-block_size)/block_size)*block_size)
+                snakeLength+=1
+                score+=30                                                     
+                flag=random.randrange(1,3)
+
         snakeHead=[]
         snakeHead.append(lead_x)
         snakeHead.append(lead_y)
         snake_List.append(snakeHead)
-        if(len(snake_List)>snakeLength):
-            del snake_List[0]
-        for eachSegment in snake_List[:-1]:
-           if eachSegment == snakeHead:
-                gameOver = True
-
-    
         score_text="Score:"+str(score)
         score_display(score_text,blue)
         gameDisplay.blit(font.render("Level 1",True,blue),[300,10])
         snake(block_size,snake_List)
-        pygame.display.update()
+        if(len(snake_List)>snakeLength):
+           del snake_List[0]
+        for eachSegment in snake_List[:-1]:
+           if eachSegment == snakeHead:
+                message_to_screen("Game Over,Press C to play again,Q to Quit",red)
+##                score_display("Final Score:"+str(score),blue)
+                pygame.display.update()
+                gameOver=True
+                while gameOver == True:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_q:
+                                pygame.quit()  
+                            elif event.key == pygame.K_c:
+                                score=0
+                                gameLoop()           
 
+        pygame.display.update()
+                
       
         #gameDisplay.fill(red,rect=[200,200,50,50])
 
         
         clock.tick(FPS)
-            
-    pygame.quit()
-    quit()
 
 gameLoop()
+        
